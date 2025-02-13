@@ -11,7 +11,7 @@ mp_drawing = mp.solutions.drawing_utils
 drawing_spec = mp_drawing.DrawingSpec(color=(128,0,128),thickness=2,circle_radius=1)
 
 cap = cv2.VideoCapture(0)
-
+head_turn_count = 0  # Counter for head turns
 while cap.isOpened():
     success, image = cap.read()
 
@@ -71,14 +71,23 @@ while cap.isOpened():
             #here based on axis rot angle is calculated
             if y < -10:
                 text="Looking Left"
+                head_turn_count += 1
             elif y > 10:
                 text="Looking Right"
+                head_turn_count += 1
             elif x < -10:
                 text="Looking Down"
+                head_turn_count += 1
             elif x > 10:
                 text="Looking Up"
+                head_turn_count += 1
             else:
                 text="Forward"
+                head_turn_count += 1
+            
+            # Malpractice detection
+            if head_turn_count > 3:
+                print("Malpractice detected")
 
             nose_3d_projection,jacobian = cv2.projectPoints(nose_3d,rotation_vec,translation_vec,cam_matrix,distortion_matrix)
 
